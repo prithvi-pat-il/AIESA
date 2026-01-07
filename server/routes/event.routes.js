@@ -45,7 +45,10 @@ router.get('/', async (req, res) => {
 router.post('/', authMiddleware, roleMiddleware(['member', 'admin']), upload.single('image'), async (req, res) => {
     try {
         const { title, description, date } = req.body;
-        const image = req.file ? `/uploads/${req.file.filename}` : null;
+        let image = null;
+        if (req.file) {
+            image = req.file.path.startsWith('http') ? req.file.path : `/uploads/${req.file.filename}`;
+        }
         const event = await Event.create({ title, description, image, date });
         res.status(201).json(event);
     } catch (err) {
@@ -60,7 +63,9 @@ router.put('/:id', authMiddleware, roleMiddleware(['member', 'admin']), upload.s
         const event = await Event.findByPk(req.params.id);
         if (!event) return res.status(404).json({ message: 'Event not found' });
 
-        if (req.file) event.image = `/uploads/${req.file.filename}`;
+        if (req.file) {
+            event.image = req.file.path.startsWith('http') ? req.file.path : `/uploads/${req.file.filename}`;
+        }
         if (title) event.title = title;
         if (description) event.description = description; // Allow partial updates
         if (date) event.date = date;
