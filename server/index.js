@@ -53,9 +53,36 @@ if (!fs.existsSync(uploadsDir)) {
 // Start Server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+
     // Sync Database after start
-    sequelize.sync({ alter: true }).then(() => {
+    sequelize.sync({ alter: true }).then(async () => {
         console.log('Database synced successfully');
+
+        // Seed default admin if no users exist
+        try {
+            const User = require('./models/User');
+            const bcrypt = require('bcryptjs');
+            const userCount = await User.count();
+            if (userCount === 0) {
+                const hashedPassword = await bcrypt.hash('admin123', 10);
+                await User.create({
+                    name: 'Super Admin',
+                    email: 'admin@aiesa.com',
+                    password: hashedPassword,
+                    role: 'admin',
+                    post: 'President',
+                    order_index: 0
+                });
+                console.log('------------------------------------------------');
+                console.log('DEFAULT ADMIN CREATED');
+                console.log('Email: admin@aiesa.com');
+                console.log('Password: admin123');
+                console.log('------------------------------------------------');
+            }
+        } catch (seedErr) {
+            console.error('Error seeding default admin:', seedErr);
+        }
+
     }).catch(err => {
         console.error('Database sync error:', err);
     });
