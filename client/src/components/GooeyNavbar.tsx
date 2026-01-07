@@ -1,7 +1,17 @@
 import { useRef, useEffect, useState } from 'react';
+import type { MouseEvent, KeyboardEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { logout, getCurrentUser } from '../services/auth';
 import '../styles/gooey.css';
+
+interface GooeyNavbarProps {
+    animationTime?: number;
+    particleCount?: number;
+    particleDistances?: number[];
+    particleR?: number;
+    timeVariance?: number;
+    colors?: number[];
+}
 
 const GooeyNavbar = ({
     animationTime = 600,
@@ -10,7 +20,7 @@ const GooeyNavbar = ({
     particleR = 100,
     timeVariance = 300,
     colors = [1, 2, 3, 1, 2, 3, 1, 4],
-}) => {
+}: GooeyNavbarProps) => {
     const location = useLocation();
     const user = getCurrentUser();
     const items = [
@@ -20,10 +30,10 @@ const GooeyNavbar = ({
         { label: "Contact", href: "/contact" },
     ];
 
-    const containerRef = useRef(null);
-    const navRef = useRef(null);
-    const filterRef = useRef(null);
-    const textRef = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const navRef = useRef<HTMLUListElement>(null);
+    const filterRef = useRef<HTMLSpanElement>(null);
+    const textRef = useRef<HTMLSpanElement>(null);
 
     // Find index based on current path
     const currentPathIndex = items.findIndex(item => item.href === location.pathname);
@@ -31,12 +41,21 @@ const GooeyNavbar = ({
 
     const noise = (n = 1) => n / 2 - Math.random() * n;
 
-    const getXY = (distance, pointIndex, totalPoints) => {
+    const getXY = (distance: number, pointIndex: number, totalPoints: number) => {
         const angle = ((360 + noise(8)) / totalPoints) * pointIndex * (Math.PI / 180);
         return [distance * Math.cos(angle), distance * Math.sin(angle)];
     };
 
-    const createParticle = (i, t, d, r) => {
+    interface Particle {
+        start: number[];
+        end: number[];
+        time: number;
+        scale: number;
+        color: number;
+        rotate: number;
+    }
+
+    const createParticle = (i: number, t: number, d: number[], r: number): Particle => {
         let rotate = noise(r / 10);
         return {
             start: getXY(d[0], particleCount - i, particleCount),
@@ -48,7 +67,7 @@ const GooeyNavbar = ({
         };
     };
 
-    const makeParticles = element => {
+    const makeParticles = (element: HTMLElement) => {
         const d = particleDistances;
         const r = particleR;
         const bubbleTime = animationTime * 2 + timeVariance;
@@ -80,7 +99,9 @@ const GooeyNavbar = ({
                 });
                 setTimeout(() => {
                     try {
-                        element.removeChild(particle);
+                        if (element.contains(particle)) {
+                            element.removeChild(particle);
+                        }
                     } catch {
                         // Do nothing
                     }
@@ -89,7 +110,7 @@ const GooeyNavbar = ({
         }
     };
 
-    const updateEffectPosition = element => {
+    const updateEffectPosition = (element: HTMLElement) => {
         if (!containerRef.current || !filterRef.current || !textRef.current) return;
         const containerRect = containerRef.current.getBoundingClientRect();
         const pos = element.getBoundingClientRect();
@@ -102,11 +123,11 @@ const GooeyNavbar = ({
         };
         Object.assign(filterRef.current.style, styles);
         Object.assign(textRef.current.style, styles);
-        // @ts-ignore
+
         textRef.current.innerText = element.innerText;
     };
 
-    const handleClick = (e, index) => {
+    const handleClick = (e: MouseEvent<HTMLLIElement>, index: number) => {
         const liEl = e.currentTarget;
         if (activeIndex === index) return;
 
@@ -114,17 +135,14 @@ const GooeyNavbar = ({
         updateEffectPosition(liEl);
 
         if (filterRef.current) {
-            // @ts-ignore
             const particles = filterRef.current.querySelectorAll('.particle');
-            particles.forEach(p => filterRef.current.removeChild(p));
+            particles.forEach(p => filterRef.current?.removeChild(p));
         }
 
         if (textRef.current) {
-            // @ts-ignore
             textRef.current.classList.remove('active');
-            // @ts-ignore
+            // Trigger reflow
             void textRef.current.offsetWidth;
-            // @ts-ignore
             textRef.current.classList.add('active');
         }
 
@@ -133,12 +151,27 @@ const GooeyNavbar = ({
         }
     };
 
-    const handleKeyDown = (e, index) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLAnchorElement>, index: number) => {
         if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            const liEl = e.currentTarget.parentElement;
+            e.preventDefault(); // Prevent scrolling for space
+            const liEl = e.currentTarget.parentElement as HTMLLIElement;
             if (liEl) {
-                handleClick({ currentTarget: liEl }, index);
+                // Simulate click event
+                // We construct a synthetic event or just call logic. Calling logic via separate function is better but reusing handleClick needs exact event shape.
+                // Simpler: just call setActiveIndex and updateEffectPosition directly since we have the element.
+                if (activeIndex === index) return;
+                setActiveIndex(index);
+                updateEffectPosition(liEl);
+                if (filterRef.current) {
+                    const particles = filterRef.current.querySelectorAll('.particle');
+                    particles.forEach(p => filterRef.current?.removeChild(p));
+                    makeParticles(filterRef.current);
+                }
+                if (textRef.current) {
+                    textRef.current.classList.remove('active');
+                    void textRef.current.offsetWidth;
+                    textRef.current.classList.add('active');
+                }
             }
         }
     };
@@ -153,17 +186,15 @@ const GooeyNavbar = ({
 
     useEffect(() => {
         if (!navRef.current || !containerRef.current) return;
-        // @ts-ignore
-        const activeLi = navRef.current.querySelectorAll('li')[activeIndex];
+
+        const activeLi = navRef.current.querySelectorAll('li')[activeIndex] as HTMLLIElement;
         if (activeLi) {
             updateEffectPosition(activeLi);
-            // @ts-ignore
             textRef.current?.classList.add('active');
         }
 
         const resizeObserver = new ResizeObserver(() => {
-            // @ts-ignore
-            const currentActiveLi = navRef.current?.querySelectorAll('li')[activeIndex];
+            const currentActiveLi = navRef.current?.querySelectorAll('li')[activeIndex] as HTMLLIElement;
             if (currentActiveLi) {
                 updateEffectPosition(currentActiveLi);
             }
