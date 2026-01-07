@@ -1,38 +1,11 @@
-# Dependencies
-node_modules/
-package-lock.json
-
-# Environment variables
+node_modules
 .env
-.env.local
-.env.*.local
-
-# Database files
-*.sqlite
-*.sqlite3
-*.db
-
-# Uploads and user-generated content
-uploads/
-public/uploads/
-
-# Build outputs
-dist/
-build/
-*.log
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
+dist
+build
 .DS_Store
-Thumbs.db
-
-# Temporary files
-*.tmp
-*.temp
-
+*.log
+coverage
+.vscode
+.idea
+db.sqlite
+*.sqlite
