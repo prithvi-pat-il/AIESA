@@ -220,12 +220,11 @@ const Antigravity = ({
                     color: 'white',
                     textShadow: '0 0 20px rgba(139, 92, 246, 0.8)',
                     fontFamily: '"Outfit", sans-serif',
-                    letterSpacing: '2px',
-                    fontSize: 'clamp(2.5rem, 8vw, 6rem)' // Responsive Font Size
+                    letterSpacing: '2px'
                 }}>
                     {eventName}
                 </h1>
-                <p className="lead mb-5 fs-4" style={{ color: '#a78bfa', fontSize: 'clamp(1rem, 4vw, 1.5rem)' }}>
+                <p className="lead mb-5 fs-4" style={{ color: '#a78bfa' }}>
                     Artificial Intelligence Engineering Students Association
                 </p>
 

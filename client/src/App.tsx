@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import GooeyNavbar from './components/GooeyNavbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import SetupAdmin from './pages/SetupAdmin';
 import Events from './pages/Events';
 import Members from './pages/Members';
 import Contact from './pages/Contact';
@@ -21,7 +20,6 @@ function App() {
         <Route path="/events" element={<Events />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/setup" element={<SetupAdmin />} />
 
         <Route element={<ProtectedRoute roles={['member', 'admin']} />}>
           <Route path="/dashboard" element={<CommitteeDashboard />} />

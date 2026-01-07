@@ -5,35 +5,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 require('dotenv').config();
 
-// Setup Default Admin (Manual Trigger - with Reset)
-router.get('/setup-admin', async (req, res) => {
-    try {
-        const existingAdmin = await User.findOne({ where: { email: 'admin@aiesa.com' } });
-
-        const hashedPassword = await bcrypt.hash('admin123', 10);
-
-        if (existingAdmin) {
-            // Reset password if user exists
-            existingAdmin.password = hashedPassword;
-            existingAdmin.role = 'admin'; // Ensure admin role
-            await existingAdmin.save();
-            return res.json({ message: 'Admin exists. PASSWORD RESET to: admin123', user: existingAdmin });
-        }
-
-        const user = await User.create({
-            name: 'Super Admin',
-            email: 'admin@aiesa.com',
-            password: hashedPassword,
-            role: 'admin',
-            post: 'President',
-            order_index: 0
-        });
-        res.status(201).json({ message: 'Default admin created successfully', user });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
 // Register (for initial setup or admin use)
 router.post('/register', async (req, res) => {
     try {
@@ -56,10 +27,7 @@ router.post('/register', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
     try {
-        let { email, password } = req.body;
-        // Sanitize email
-        email = email ? email.trim().toLowerCase() : '';
-
+        const { email, password } = req.body;
         const user = await User.findOne({ where: { email } });
         if (!user) return res.status(404).json({ message: 'User not found' });
 

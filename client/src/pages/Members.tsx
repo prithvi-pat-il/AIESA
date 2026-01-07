@@ -37,7 +37,7 @@ const Members = () => {
                             <div className="card h-100 text-center p-2" style={{ background: '#0f172a', border: 'none', height: '400px' }}>
                                 <div className="member-image-container mb-3" style={{ height: '250px', borderRadius: '15px', overflow: 'hidden', position: 'relative' }}>
                                     <img
-                                        src={member.profile_image ? `http://localhost:5000${member.profile_image}` : "https://via.placeholder.com/300x400"}
+                                        src={member.profile_image ? (import.meta.env.PROD ? member.profile_image : `http://localhost:5000${member.profile_image}`) : "https://via.placeholder.com/300x400"}
                                         alt={member.name}
                                         className="w-100 h-100"
                                         style={{ objectFit: 'cover', transition: 'transform 0.5s ease' }}
