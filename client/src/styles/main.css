@@ -1,0 +1,123 @@
+:root {
+    --primary-color: #8b5cf6;
+    /* Violet 500 */
+    --primary-hover: #7c3aed;
+    /* Violet 600 */
+    --secondary-color: #a78bfa;
+    /* Violet 400 */
+    --bg-dark: #0f172a;
+    /* Slate 900 / Deep Violet-ish Black */
+    --bg-card: #1e293b;
+    /* Slate 800 */
+    --text-light: #f8fafc;
+    --text-muted: #94a3b8;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Bootstrap Overrides */
+.text-primary {
+    color: var(--secondary-color) !important;
+}
+
+.bg-light {
+    background-color: var(--bg-card) !important;
+}
+
+.bg-white {
+    background-color: var(--bg-card) !important;
+}
+
+.text-secondary {
+    color: var(--text-muted) !important;
+}
+
+.text-dark {
+    color: var(--text-light) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--text-light);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+}
+
+.btn-outline-primary {
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+/* Cards */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.card-title {
+    color: var(--secondary-color);
+}
+
+.card-text {
+    color: var(--text-muted);
+}
+
+/* Inputs */
+.form-control,
+.form-select {
+    background-color: #334155;
+    border-color: #475569;
+    color: white;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: #334155;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(139, 92, 246, 0.25);
+    color: white;
+}
+
+.form-control::placeholder {
+    color: #94a3b8;
+}
+
+/* Table */
+.table {
+    color: var(--text-light);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.table-hover tbody tr:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.hero-section {
+    background: transparent;
+    /* Let antigravity show */
+}

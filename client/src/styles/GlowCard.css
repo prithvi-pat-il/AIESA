@@ -1,0 +1,18 @@
+.glow-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(139, 92, 246, 0.1);
+    /* Subtle border initially */
+}
+
+.glow-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+    /* Cyan glow */
+    border-color: rgba(6, 182, 212, 0.5);
+}
+
+/* Ensure inner card background doesn't block the rounded corners if any */
+.glow-card .card {
+    border: none;
+    background: transparent;
+}
