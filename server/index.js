@@ -42,10 +42,21 @@ app.use((err, req, res, next) => {
     }
 });
 
-// Sync Database
-sequelize.sync({ alter: true }).then(() => {
-    console.log('Database synced successfully');
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}).catch(err => {
-    console.error('Database sync error:', err);
+const fs = require('fs');
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+}
+
+// Start Server
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    // Sync Database after start
+    sequelize.sync({ alter: true }).then(() => {
+        console.log('Database synced successfully');
+    }).catch(err => {
+        console.error('Database sync error:', err);
+    });
 });
