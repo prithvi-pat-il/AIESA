@@ -24,6 +24,29 @@ router.post('/register', async (req, res) => {
     }
 });
 
+// Setup Default Admin (Manual Trigger)
+router.get('/setup-admin', async (req, res) => {
+    try {
+        const existingAdmin = await User.findOne({ where: { email: 'admin@aiesa.com' } });
+        if (existingAdmin) {
+            return res.json({ message: 'Admin user already exists', user: existingAdmin });
+        }
+
+        const hashedPassword = await bcrypt.hash('admin123', 10);
+        const user = await User.create({
+            name: 'Super Admin',
+            email: 'admin@aiesa.com',
+            password: hashedPassword,
+            role: 'admin',
+            post: 'President',
+            order_index: 0
+        });
+        res.status(201).json({ message: 'Default admin created successfully', user });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Login
 router.post('/login', async (req, res) => {
     try {
