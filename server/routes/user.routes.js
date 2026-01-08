@@ -51,7 +51,7 @@ router.post('/', authMiddleware, roleMiddleware(['admin']), upload.single('profi
     try {
         const { name, email, password, role, insta_id, post } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
-        const profile_image = req.file ? `/uploads/${req.file.filename}` : null;
+        const profile_image = req.file ? req.file.path : null;
 
         const user = await User.create({
             name, email, password: hashedPassword, role, insta_id, post, profile_image
@@ -84,7 +84,7 @@ router.put('/:id', authMiddleware, upload.single('profile_image'), async (req, r
         if (email) user.email = email;
         if (insta_id) user.insta_id = insta_id;
         if (post) user.post = post;
-        if (req.file) user.profile_image = `/uploads/${req.file.filename}`;
+        if (req.file) user.profile_image = req.file.path;
 
         // Only admin can change role
         if (req.user.role === 'admin' && req.body.role) {
