@@ -14,7 +14,8 @@ router.post('/reorder', authMiddleware, roleMiddleware(['admin']), async (req, r
         if (!orderedIds || !Array.isArray(orderedIds)) return res.status(400).json({ message: 'Invalid data' });
 
         for (let i = 0; i < orderedIds.length; i++) {
-            await User.update({ order_index: i }, { where: { id: orderedIds[i] } });
+            // Mongoose update
+            await User.findByIdAndUpdate(orderedIds[i], { order_index: i });
         }
         res.json({ message: 'Order updated' });
     } catch (err) {
@@ -26,10 +27,8 @@ router.post('/reorder', authMiddleware, roleMiddleware(['admin']), async (req, r
 // Get all members (Public) - Exclude password
 router.get('/', async (req, res) => {
     try {
-        const users = await User.findAll({
-            attributes: { exclude: ['password'] },
-            order: [['order_index', 'ASC'], ['id', 'ASC']]
-        });
+        // Mongoose select and sort
+        const users = await User.find().select('-password').sort({ order_index: 1, _id: 1 });
         res.json(users);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -39,7 +38,7 @@ router.get('/', async (req, res) => {
 // Get single user (Public? or Protected?)
 router.get('/:id', async (req, res) => {
     try {
-        const user = await User.findByPk(req.params.id, { attributes: { exclude: ['password'] } });
+        const user = await User.findById(req.params.id).select('-password');
         if (!user) return res.status(404).json({ message: 'User not found' });
         res.json(user);
     } catch (err) {
@@ -67,12 +66,16 @@ router.post('/', authMiddleware, roleMiddleware(['admin']), upload.single('profi
 router.put('/:id', authMiddleware, upload.single('profile_image'), async (req, res) => {
     try {
         // Check permissions
-        const userToUpdateId = parseInt(req.params.id);
+        const userToUpdateId = req.params.id; // Correctly handle ID as string/ObjectId
+        // req.user.id is from JWT, which might be string now.
+        // Assuming authMiddleware puts user info in req.user
+
+        // Mongoose IDs are objects, convert to string for comparison
         if (req.user.role !== 'admin' && req.user.id !== userToUpdateId) {
             return res.status(403).json({ message: 'Access Forbidden' });
         }
 
-        const user = await User.findByPk(userToUpdateId);
+        const user = await User.findById(userToUpdateId);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         const { name, email, insta_id, post, password } = req.body;
@@ -93,7 +96,12 @@ router.put('/:id', authMiddleware, upload.single('profile_image'), async (req, r
         }
 
         await user.save();
-        res.json({ message: 'User updated', user: { ...user.toJSON(), password: undefined } });
+
+        // Convert to object to safely remove password before sending response
+        const userObj = user.toObject();
+        delete userObj.password;
+
+        res.json({ message: 'User updated', user: userObj });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -102,15 +110,12 @@ router.put('/:id', authMiddleware, upload.single('profile_image'), async (req, r
 // Delete Member (Admin Only)
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), async (req, res) => {
     try {
-        const user = await User.findByPk(req.params.id);
+        const user = await User.findByIdAndDelete(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
-        await user.destroy();
         res.json({ message: 'User deleted' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
-
-
 
 module.exports = router;

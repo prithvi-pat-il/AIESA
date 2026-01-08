@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const sequelize = require('./db');
+const connectDB = require('./db'); // Changed import
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth.routes');
@@ -10,6 +10,9 @@ const userRoutes = require('./routes/user.routes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Connect to MongoDB
+connectDB();
 
 app.use(cors());
 app.use(express.json());
@@ -50,40 +53,50 @@ if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir);
 }
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+// Start Server and Seed Admin
+const startServer = async () => {
+    try {
+        // We are already connected via connectDB(), but we can wait or just start.
+        // connectDB() is async but we didn't await it at top level (common pattern).
+        // Better to seed inside here if connection is ready, or use 'open' event.
+        // Simple approach:
 
-    // Sync Database after start
-    sequelize.sync({ alter: true }).then(async () => {
-        console.log('Database synced successfully');
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+            seedDefaultAdmin();
+        });
 
-        // Seed default admin if no users exist
-        try {
-            const User = require('./models/User');
-            const bcrypt = require('bcryptjs');
-            const userCount = await User.count();
-            if (userCount === 0) {
-                const hashedPassword = await bcrypt.hash('admin123', 10);
-                await User.create({
-                    name: 'Super Admin',
-                    email: 'admin@aiesa.com',
-                    password: hashedPassword,
-                    role: 'admin',
-                    post: 'President',
-                    order_index: 0
-                });
-                console.log('------------------------------------------------');
-                console.log('DEFAULT ADMIN CREATED');
-                console.log('Email: admin@aiesa.com');
-                console.log('Password: admin123');
-                console.log('------------------------------------------------');
-            }
-        } catch (seedErr) {
-            console.error('Error seeding default admin:', seedErr);
+    } catch (error) {
+        console.error('Server startup error:', error);
+    }
+}
+
+const seedDefaultAdmin = async () => {
+    try {
+        const User = require('./models/User');
+        const bcrypt = require('bcryptjs');
+
+        // Mongoose: countDocuments
+        const userCount = await User.countDocuments();
+        if (userCount === 0) {
+            const hashedPassword = await bcrypt.hash('admin123', 10);
+            await User.create({
+                name: 'Super Admin',
+                email: 'admin@aiesa.com',
+                password: hashedPassword,
+                role: 'admin',
+                post: 'President',
+                order_index: 0
+            });
+            console.log('------------------------------------------------');
+            console.log('DEFAULT ADMIN CREATED');
+            console.log('Email: admin@aiesa.com');
+            console.log('Password: admin123');
+            console.log('------------------------------------------------');
         }
+    } catch (seedErr) {
+        console.error('Error seeding default admin:', seedErr);
+    }
+};
 
-    }).catch(err => {
-        console.error('Database sync error:', err);
-    });
-});
+startServer();

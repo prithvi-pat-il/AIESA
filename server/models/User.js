@@ -1,16 +1,47 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../db');
+const mongoose = require('mongoose');
 
-const User = sequelize.define('User', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING, allowNull: false },
-    email: { type: DataTypes.STRING, allowNull: false, unique: true },
-    password: { type: DataTypes.STRING, allowNull: false },
-    role: { type: DataTypes.STRING, defaultValue: 'member' }, // 'admin', 'member'
-    insta_id: { type: DataTypes.STRING },
-    post: { type: DataTypes.STRING },
-    profile_image: { type: DataTypes.STRING },
-    order_index: { type: DataTypes.INTEGER, defaultValue: 0 }
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    role: {
+        type: String,
+        default: 'member',
+        enum: ['admin', 'member']
+    },
+    insta_id: {
+        type: String
+    },
+    post: {
+        type: String
+    },
+    profile_image: {
+        type: String
+    },
+    order_index: {
+        type: Number,
+        default: 0
+    }
+}, {
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+        versionKey: false,
+        transform: function (doc, ret) {
+            ret.id = ret._id;
+            delete ret._id;
+        }
+    }
 });
 
-module.exports = User;
+module.exports = mongoose.model('User', userSchema);

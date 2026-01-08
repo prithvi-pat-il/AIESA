@@ -34,7 +34,7 @@ router.put('/main-event', authMiddleware, roleMiddleware(['member', 'admin']), a
 // Get All Events (Public)
 router.get('/', async (req, res) => {
     try {
-        const events = await Event.findAll();
+        const events = await Event.find();
         res.json(events);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -57,7 +57,7 @@ router.post('/', authMiddleware, roleMiddleware(['member', 'admin']), upload.sin
 router.put('/:id', authMiddleware, roleMiddleware(['member', 'admin']), upload.single('image'), async (req, res) => {
     try {
         const { title, description, date } = req.body;
-        const event = await Event.findByPk(req.params.id);
+        const event = await Event.findById(req.params.id);
         if (!event) return res.status(404).json({ message: 'Event not found' });
 
         if (req.file) event.image = `/uploads/${req.file.filename}`;
@@ -75,9 +75,9 @@ router.put('/:id', authMiddleware, roleMiddleware(['member', 'admin']), upload.s
 // Delete Event
 router.delete('/:id', authMiddleware, roleMiddleware(['member', 'admin']), async (req, res) => {
     try {
-        const event = await Event.findByPk(req.params.id);
+        const event = await Event.findByIdAndDelete(req.params.id);
         if (!event) return res.status(404).json({ message: 'Event not found' });
-        await event.destroy();
+        // Mongoose findByIdAndDelete returns the document that was deleted
         res.json({ message: 'Event deleted' });
     } catch (err) {
         res.status(500).json({ error: err.message });
