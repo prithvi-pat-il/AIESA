@@ -13,7 +13,7 @@ function App() {
   return (
     <Router>
       <GooeyNavbar />
-      <GooeyNavbar />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<Members />} />

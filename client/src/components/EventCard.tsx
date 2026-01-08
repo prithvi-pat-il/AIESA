@@ -13,7 +13,7 @@ const EventCard = ({ event }: EventProps) => {
         <div className="card h-100 event-card border-0 shadow-sm" style={{ background: '#1e293b' }}>
             {event.image ? (
                 <img
-                    src={`http://localhost:5000${event.image}`}
+                    src={`https://aiesa-frontend.onrender.com${event.image}`}
                     className="card-img-top"
                     alt={event.title}
                     style={{ height: '200px', objectFit: 'cover' }}
