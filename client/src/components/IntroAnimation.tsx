@@ -25,6 +25,7 @@ const IntroAnimation = ({ onComplete }: { onComplete: () => void }) => {
             {/* HUD Overlay */}
             <div className={`hud-container ${phase >= 1 ? 'active' : ''}`}>
                 <img src="/hud-overlay-new.jpg" alt="HUD" className="hud-image" />
+                <div className="vignette-overlay"></div>
                 <div className="scanning-line"></div>
             </div>
 
@@ -32,7 +33,7 @@ const IntroAnimation = ({ onComplete }: { onComplete: () => void }) => {
             <div className={`logo-container ${phase >= 2 ? 'active' : ''}`}>
                 <div className="hex-ring"></div>
                 <div className="hex-ring reverse"></div>
-                <img src="/aiesa-logo.jpg" alt="AIESA" className="intro-logo" />
+                <img src="/aiesa-logo-new.jpg" alt="AIESA" className="intro-logo" />
                 <div className="glitch-text">INITIALIZING SYSTEM...</div>
             </div>
 
@@ -41,7 +42,7 @@ const IntroAnimation = ({ onComplete }: { onComplete: () => void }) => {
                     position: fixed;
                     inset: 0;
                     background: #000;
-                    z-index: 9999;
+                    z-index: 2147483647 !important; /* Force on top of everything */
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -56,8 +57,8 @@ const IntroAnimation = ({ onComplete }: { onComplete: () => void }) => {
                 /* HUD Styles */
                 .hud-container {
                     position: absolute;
-                    width: 100%;
-                    height: 100%;
+                    width: 100vw; /* Use viewport width */
+                    height: 100vh; /* Use viewport height */
                     opacity: 0;
                     transform: scale(1.1);
                     transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
@@ -69,15 +70,26 @@ const IntroAnimation = ({ onComplete }: { onComplete: () => void }) => {
                 .hud-image {
                     width: 100%;
                     height: 100%;
-                    object-fit: cover; /* or contain depending on image aspect ratio vs screen */
-                    filter: drop-shadow(0 0 10px #8b5cf6);
+                    object-fit: contain !important; /* Ensure full image is visible, no cropping */
+                    /* filter: drop-shadow(0 0 10px #8b5cf6); Removed glow as requested */
+                }
+                
+                .vignette-overlay {
+                    position: absolute;
+                    inset: 0;
+                    background: radial-gradient(circle, transparent 50%, #000 95%);
+                    /* box-shadow: inset 0 0 100px rgba(139, 92, 246, 0.3); Removed violet glow */
+                    mix-blend-mode: multiply; /* Helps blend the black cleanly */
+                    pointer-events: none;
                 }
 
                 /* Logo Styles */
                 .logo-container {
                     position: relative;
-                    width: 300px;
-                    height: 300px;
+                    width: 40vmin;
+                    height: 40vmin;
+                    max-width: 400px;
+                    max-height: 400px;
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -91,8 +103,10 @@ const IntroAnimation = ({ onComplete }: { onComplete: () => void }) => {
                 }
                 
                 .intro-logo {
-                    width: 180px;
-                    height: 180px;
+                    width: 18vmin;
+                    height: 18vmin;
+                    max-width: 250px;
+                    max-height: 250px;
                     border-radius: 50%;
                     box-shadow: 0 0 30px #06b6d4, inset 0 0 20px #06b6d4;
                     z-index: 10;
@@ -102,15 +116,19 @@ const IntroAnimation = ({ onComplete }: { onComplete: () => void }) => {
                 /* Sci-fi Rings */
                 .hex-ring {
                     position: absolute;
-                    width: 260px;
-                    height: 260px;
+                    width: 28vmin;
+                    height: 28vmin;
+                    max-width: 340px;
+                    max-height: 340px;
                     border: 2px dashed rgba(139, 92, 246, 0.6);
                     border-radius: 50%;
                     animation: spin 10s linear infinite;
                 }
                 .hex-ring.reverse {
-                    width: 280px;
-                    height: 280px;
+                    width: 32vmin;
+                    height: 32vmin;
+                    max-width: 360px;
+                    max-height: 360px;
                     border: 4px dotted rgba(6, 182, 212, 0.4);
                     animation: spin 15s linear infinite reverse;
                 }

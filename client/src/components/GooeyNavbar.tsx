@@ -25,7 +25,7 @@ const GooeyNavbar = ({
     const user = getCurrentUser();
     const items = [
         { label: "Home", href: "/" },
-        { label: "Committee Members", href: "/about" },
+        { label: <><span className="d-none d-md-inline">Committee </span>Members</>, href: "/about" },
         { label: "Events", href: "/events" },
         { label: "Contact", href: "/contact" },
     ];
@@ -238,7 +238,7 @@ const GooeyNavbar = ({
 
             </div>
 
-            <div className="auth-buttons-container" style={{ position: 'fixed', top: '20px', right: '30px', zIndex: 1000 }}>
+            <div className="auth-buttons-container">
                 {!user ? (
                     <Link to="/login" className="cyber-btn">LOGIN</Link>
                 ) : (

@@ -13,6 +13,9 @@
     transform: translate(-50%, -50%);
     pointer-events: none;
     z-index: 2;
+    max-width: 100vw;
+    overflow: hidden;
+    /* Ensure canvas doesn't trigger scroll */
 }
 
 .eb-canvas {
@@ -55,7 +58,8 @@
 
 .eb-background-glow {
     z-index: -1;
-    transform: scale(1.1);
+    transform: scale(1.0);
+    /* Reduced from 1.1 to prevent overflow */
     filter: blur(32px);
     opacity: 0.3;
     background: linear-gradient(-30deg, var(--electric-light-color), transparent, var(--electric-border-color));

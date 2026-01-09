@@ -14,6 +14,7 @@ interface User {
 
 const Members = () => {
     const [members, setMembers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchMembers = async () => {
@@ -23,10 +24,46 @@ const Members = () => {
                 setMembers(committeeMembers);
             } catch (err) {
                 console.error("Failed to fetch members", err);
+            } finally {
+                setLoading(false);
             }
         };
         fetchMembers();
     }, []);
+
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+                <div className="cyber-loader">
+                    <div className="inner-ring"></div>
+                </div>
+                <style>{`
+                    .cyber-loader {
+                        width: 80px;
+                        height: 80px;
+                        border: 4px solid rgba(139, 92, 246, 0.2);
+                        border-top: 4px solid #8b5cf6;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                        position: relative;
+                        box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+                    }
+                    .inner-ring {
+                        position: absolute;
+                        inset: 10px;
+                        border: 4px solid rgba(6, 182, 212, 0.2);
+                        border-bottom: 4px solid #06b6d4;
+                        border-radius: 50%;
+                        animation: spin 1.5s linear infinite reverse;
+                    }
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `}</style>
+            </div>
+        );
+    }
 
     return (
         <div className="container mt-5 fade-in">

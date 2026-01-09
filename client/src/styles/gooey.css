@@ -268,3 +268,69 @@
     box-shadow: 0 0 15px rgba(109, 40, 217, 0.5);
     color: white;
 }
+
+/* Auth Buttons Container - Desktop Default */
+.auth-buttons-container {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    z-index: 1000;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .gooey-nav-container {
+        top: 10px;
+        left: 0;
+        width: 100%;
+        max-width: 100vw;
+        box-sizing: border-box;
+        justify-content: center;
+        gap: 5px;
+        transform: none;
+        /* Removed scale to fix JS positioning glitch */
+    }
+
+    .gooey-nav-container nav {
+        padding: 5px 10px;
+        background: rgba(0, 0, 0, 0.6);
+        /* Add some background for readability */
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .gooey-nav-container nav ul {
+        gap: 0.5em;
+        padding: 0 0.5em;
+    }
+
+    .gooey-nav-container nav ul li {
+        font-size: 0.75rem;
+        /* Smaller font */
+        letter-spacing: 1px;
+    }
+
+    /* Fix for effect text alignment/size on mobile */
+    .gooey-nav-container .effect.text {
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+    }
+
+    .gooey-nav-container nav ul li a {
+        padding: 0.5em 0.8em;
+    }
+
+    /* Adjust Auth Buttons for Mobile */
+    .auth-buttons-container {
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        transform: scale(0.9);
+    }
+
+    /* Make the Login button a bit more compact if needed */
+    .cyber-btn {
+        padding: 8px 20px;
+        font-size: 0.9em;
+    }
+}

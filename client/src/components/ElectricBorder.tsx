@@ -7,6 +7,8 @@ const ElectricBorder = ({
     speed = 1,
     chaos = 0.12,
     borderRadius = 24,
+    offset = 60,
+    displacement = 60,
     className,
     style
 }: {
@@ -15,6 +17,8 @@ const ElectricBorder = ({
     speed?: number;
     chaos?: number;
     borderRadius?: number;
+    offset?: number;
+    displacement?: number;
     className?: string;
     style?: React.CSSProperties;
 }) => {
@@ -159,8 +163,7 @@ const ElectricBorder = ({
         const amplitude = chaos;
         const frequency = 10;
         const baseFlatness = 0;
-        const displacement = 60;
-        const borderOffset = 60;
+        const borderOffset = offset;
 
         const updateSize = () => {
             const rect = container.getBoundingClientRect();
@@ -273,7 +276,7 @@ const ElectricBorder = ({
             }
             resizeObserver.disconnect();
         };
-    }, [color, speed, chaos, borderRadius, octavedNoise, getRoundedRectPoint]);
+    }, [color, speed, chaos, borderRadius, offset, displacement, octavedNoise, getRoundedRectPoint]);
 
     const vars = {
         '--electric-border-color': color,

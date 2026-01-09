@@ -5,8 +5,8 @@ const Contact = () => {
         <div className="container mt-4 fade-in">
             <h1 className="text-center mb-5 display-4 fw-bold" style={{ color: '#8b5cf6', textShadow: '0 0 20px rgba(139, 92, 246, 0.5)' }}>Contact Us</h1>
             <div className="row justify-content-center">
-                <div className="col-md-6 mb-4 mb-md-0">
-                    <ElectricBorder color="#a78bfa" speed={1.5} chaos={0.2} borderRadius={20}>
+                <div className="col-10 col-md-6 mb-4 mb-md-0 mx-auto">
+                    <ElectricBorder color="#a78bfa" speed={1.5} chaos={0.2} borderRadius={20} offset={30} displacement={30}>
                         <div className="card p-4 shadow-lg border-0 rounded-4 h-100" style={{ background: '#0f172a' }}>
                             <form>
                                 <div className="mb-3">
