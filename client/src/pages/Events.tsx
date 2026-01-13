@@ -1,13 +1,27 @@
 import { useEffect, useState } from 'react';
 import API from '../services/api';
 import EventCard from '../components/EventCard';
+import Loader from '../components/Loader';
 
 const Events = () => {
     const [events, setEvents] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        API.get('/events').then(res => setEvents(res.data)).catch(console.error);
+        API.get('/events')
+            .then(res => {
+                setEvents(res.data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setLoading(false);
+            });
     }, []);
+
+    if (loading) {
+        return <Loader />;
+    }
 
     return (
         <div className="container mt-4 fade-in">
@@ -25,3 +39,4 @@ const Events = () => {
 };
 
 export default Events;
+

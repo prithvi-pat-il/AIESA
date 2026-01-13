@@ -4,18 +4,22 @@ import EventCard from '../components/EventCard';
 import { Link } from 'react-router-dom';
 import Antigravity from '../components/Antigravity';
 import IntroAnimation from '../components/IntroAnimation';
+import Loader from '../components/Loader';
 
 const Home = () => {
     // Check if we've shown the intro already in this session/refresh
     const [showIntro, setShowIntro] = useState(true);
     const [events, setEvents] = useState<any[]>([]);
     const [eventName, setEventName] = useState('AIESA');
+    const [loadingEvents, setLoadingEvents] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                // setLoadingEvents(true); // Already true by default
                 const eventsRes = await API.get('/events');
                 setEvents(eventsRes.data.slice(0, 3));
+                setLoadingEvents(false);
 
                 const settingsRes = await API.get('/events/main-event');
                 if (settingsRes.data.main_event_name) {
@@ -23,6 +27,7 @@ const Home = () => {
                 }
             } catch (err) {
                 console.error(err);
+                setLoadingEvents(false);
             }
         };
         fetchData();
@@ -43,18 +48,22 @@ const Home = () => {
                     <Link to="/events" className="btn btn-outline-primary rounded-pill">View More</Link>
                 </div>
 
-                <div className="row g-4">
-                    {events.map(event => (
-                        <div key={event.id} className="col-md-4">
-                            <EventCard event={event} />
-                        </div>
-                    ))}
-                    {events.length === 0 && (
-                        <div className="col-12 text-center py-5">
-                            <p className="text-muted fs-5">No events currently scheduled.</p>
-                        </div>
-                    )}
-                </div>
+                {loadingEvents ? (
+                    <Loader />
+                ) : (
+                    <div className="row g-4">
+                        {events.map(event => (
+                            <div key={event.id} className="col-md-4">
+                                <EventCard event={event} />
+                            </div>
+                        ))}
+                        {events.length === 0 && (
+                            <div className="col-12 text-center py-5">
+                                <p className="text-muted fs-5">No events currently scheduled.</p>
+                            </div>
+                        )}
+                    </div>
+                )}
             </section>
 
             <section className="py-5 bg-white rounded-3 shadow-sm px-4 mb-5 container">
