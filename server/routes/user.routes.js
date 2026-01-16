@@ -27,8 +27,17 @@ router.post('/reorder', authMiddleware, roleMiddleware(['admin']), async (req, r
 // Get all members (Public) - Exclude password
 router.get('/', async (req, res) => {
     try {
+        const { role, exclude_role } = req.query;
+        let query = {};
+
+        if (role) {
+            query.role = role;
+        } else if (exclude_role) {
+            query.role = { $ne: exclude_role };
+        }
+
         // Mongoose select and sort
-        const users = await User.find().select('-password').sort({ order_index: 1, _id: 1 });
+        const users = await User.find(query).select('-password').sort({ order_index: 1, _id: 1 });
         res.json(users);
     } catch (err) {
         res.status(500).json({ error: err.message });

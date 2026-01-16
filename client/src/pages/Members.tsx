@@ -19,9 +19,8 @@ const Members = () => {
     useEffect(() => {
         const fetchMembers = async () => {
             try {
-                const res = await api.get('/users');
-                const committeeMembers = res.data.filter((user: User) => user.role !== 'admin');
-                setMembers(committeeMembers);
+                const res = await api.get('/users?exclude_role=admin');
+                setMembers(res.data);
             } catch (err) {
                 console.error("Failed to fetch members", err);
             } finally {
