@@ -39,7 +39,7 @@ const EventCard = ({ event }: EventProps) => {
             <div className="card-body">
                 <h5 className="card-title text-white fw-bold">{event.title}</h5>
                 <h6 className="card-subtitle mb-2 text-info small">{event.date}</h6>
-                <p className="card-text text-light opacity-75">
+                <p className="card-text text-light opacity-75" style={{ whiteSpace: 'pre-wrap' }}>
                     {isExpanded || !isLongDescription
                         ? event.description
                         : `${event.description.substring(0, descriptionLimit)}...`}
