@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 interface EventProps {
     event: {
         id: number;
@@ -11,6 +13,15 @@ interface EventProps {
 import { getImageUrl } from '../utils/image';
 
 const EventCard = ({ event }: EventProps) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const toggleReadMore = () => {
+        setIsExpanded(!isExpanded);
+    };
+
+    const descriptionLimit = 100;
+    const isLongDescription = event.description.length > descriptionLimit;
+
     return (
         <div className="card h-100 event-card border-0 shadow-sm" style={{ background: '#1e293b' }}>
             {event.image ? (
@@ -28,7 +39,20 @@ const EventCard = ({ event }: EventProps) => {
             <div className="card-body">
                 <h5 className="card-title text-white fw-bold">{event.title}</h5>
                 <h6 className="card-subtitle mb-2 text-info small">{event.date}</h6>
-                <p className="card-text text-light opacity-75">{event.description.length > 100 ? event.description.substring(0, 100) + '...' : event.description}</p>
+                <p className="card-text text-light opacity-75">
+                    {isExpanded || !isLongDescription
+                        ? event.description
+                        : `${event.description.substring(0, descriptionLimit)}...`}
+                    {isLongDescription && (
+                        <span
+                            onClick={toggleReadMore}
+                            className="text-primary ms-2"
+                            style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                        >
+                            {isExpanded ? 'Show Less' : 'Read More'}
+                        </span>
+                    )}
+                </p>
             </div>
         </div>
     );
