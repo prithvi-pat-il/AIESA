@@ -8,15 +8,20 @@ interface EventProps {
         image: string;
         date?: string;
     };
+    onExpandChange?: (isExpanded: boolean) => void;
 }
 
 import { getImageUrl } from '../utils/image';
 
-const EventCard = ({ event }: EventProps) => {
+const EventCard = ({ event, onExpandChange }: EventProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const toggleReadMore = () => {
-        setIsExpanded(!isExpanded);
+        const newExpandedState = !isExpanded;
+        setIsExpanded(newExpandedState);
+        if (onExpandChange) {
+            onExpandChange(newExpandedState);
+        }
     };
 
     const descriptionLimit = 100;
