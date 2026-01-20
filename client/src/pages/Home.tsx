@@ -13,12 +13,14 @@ const Home = () => {
     const [eventName, setEventName] = useState('AIESA');
     const [loadingEvents, setLoadingEvents] = useState(true);
 
+    const [currentEventIndex, setCurrentEventIndex] = useState(0);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 // setLoadingEvents(true); // Already true by default
                 const eventsRes = await API.get('/events');
-                setEvents(eventsRes.data.slice(0, 3));
+                setEvents(eventsRes.data.slice(0, 5)); // Increase slice to 5 for carousel
                 setLoadingEvents(false);
 
                 const settingsRes = await API.get('/events/main-event');
@@ -32,6 +34,25 @@ const Home = () => {
         };
         fetchData();
     }, []);
+
+    // Auto-play effect for Home Carousel
+    useEffect(() => {
+        if (events.length <= 1) return;
+
+        const interval = setInterval(() => {
+            setCurrentEventIndex((prevIndex) => (prevIndex + 1) % events.length);
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [events.length]);
+
+    const nextEvent = () => {
+        setCurrentEventIndex((prevIndex) => (prevIndex + 1) % events.length);
+    };
+
+    const prevEvent = () => {
+        setCurrentEventIndex((prevIndex) => (prevIndex - 1 + events.length) % events.length);
+    };
 
     if (showIntro) {
         return <IntroAnimation onComplete={() => setShowIntro(false)} />;
@@ -51,18 +72,52 @@ const Home = () => {
                 {loadingEvents ? (
                     <Loader />
                 ) : (
-                    <div className="row g-4">
-                        {events.map(event => (
-                            <div key={event.id} className="col-md-4">
-                                <EventCard event={event} />
+                    events.length > 0 ? (
+                        <div className="d-flex align-items-center justify-content-center position-relative">
+                            {/* Left Arrow */}
+                            <button
+                                onClick={prevEvent}
+                                className="btn btn-dark position-absolute start-0 translate-middle-y rounded-circle d-none d-md-flex align-items-center justify-content-center shadow"
+                                style={{ top: '50%', width: '50px', height: '50px', zIndex: 10, border: '2px solid rgba(255,255,255,0.1)' }}
+                                aria-label="Previous Event"
+                            >
+                                <span className="fs-4 text-white">&#10094;</span>
+                            </button>
+
+                            <div className="col-md-8 col-lg-6 mx-auto">
+                                <div key={events[currentEventIndex].id} className="fade-in">
+                                    <EventCard event={events[currentEventIndex]} />
+                                </div>
                             </div>
-                        ))}
-                        {events.length === 0 && (
-                            <div className="col-12 text-center py-5">
-                                <p className="text-muted fs-5">No events currently scheduled.</p>
+
+                            {/* Right Arrow */}
+                            <button
+                                onClick={nextEvent}
+                                className="btn btn-dark position-absolute end-0 translate-middle-y rounded-circle d-none d-md-flex align-items-center justify-content-center shadow"
+                                style={{ top: '50%', width: '50px', height: '50px', zIndex: 10, border: '2px solid rgba(255,255,255,0.1)' }}
+                                aria-label="Next Event"
+                            >
+                                <span className="fs-4 text-white">&#10095;</span>
+                            </button>
+
+                            {/* Mobile Navigation (below card) */}
+                            <div className="d-flex d-md-none justify-content-center gap-3 mt-3 w-100 position-absolute" style={{ bottom: '-60px' }}>
+                                <button onClick={prevEvent} className="btn btn-dark rounded-circle shadow" style={{ width: '45px', height: '45px' }}>
+                                    <span className="fs-5 text-white">&#10094;</span>
+                                </button>
+                                <button onClick={nextEvent} className="btn btn-dark rounded-circle shadow" style={{ width: '45px', height: '45px' }}>
+                                    <span className="fs-5 text-white">&#10095;</span>
+                                </button>
                             </div>
-                        )}
-                    </div>
+
+                            {/* Spacer for mobile nav */}
+                            <div className="d-block d-md-none" style={{ height: '60px' }}></div>
+                        </div>
+                    ) : (
+                        <div className="col-12 text-center py-5">
+                            <p className="text-muted fs-5">No events currently scheduled.</p>
+                        </div>
+                    )
                 )}
             </section>
 
